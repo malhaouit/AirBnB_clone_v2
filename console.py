@@ -145,7 +145,7 @@ class HBNBCommand(cmd.Cmd):
         new_instance.save()
         print(new_instance.id)
 
-    def parse_value(value):
+    def parse_value(self, value):
         try:
             if value[0] == '"' and value[-1] == '"':
                 parsed_value = value[1:-1]
