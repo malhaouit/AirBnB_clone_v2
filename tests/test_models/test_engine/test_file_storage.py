@@ -112,7 +112,7 @@ class test_fileStorage(unittest.TestCase):
     @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', "Skip db storage")
     def test_serialization_with_dynamic_params(self):
         """Test that objects with dynamic parameters
-        are correctly serialized."""
+        are correctly serialized"""
         new_obj = BaseModel(extra_param="Extra Value")
         new_obj.save()
         with open("file.json", "r") as f:
