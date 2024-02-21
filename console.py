@@ -119,16 +119,7 @@ class HBNBCommand(cmd.Cmd):
         if len(args_list) == 0:
             print("** class name missing **")
             return
-        if len(args_list) == 1:
-            if args_list[0] not in HBNBCommand.classes:
-                print("** class doesn't exist **")
-                return
-            else:
-                new_instance = HBNBCommand.classes[args_list[0]]()
-                print(new_instance.id)
-                storage.save()
-                return
-        elif len(args_list) > 1:
+        else:
             if args_list[0] not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
