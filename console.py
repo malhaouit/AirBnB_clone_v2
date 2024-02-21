@@ -115,37 +115,33 @@ class HBNBCommand(cmd.Cmd):
 
     def do_create(self, args):
         """ Create an object of any class"""
-        '''
-        if not args:
-            print("** class name missing **")
-            return
-        elif args not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
-        new_instance = HBNBCommand.classes[args]()
-        storage.save()
-        print(new_instance.id)
-        storage.save()
-        '''
         args_list = args.split()
         if len(args_list) == 0:
             print("** class name missing **")
             return
-        class_name = args_list[0]
-        if class_name not in HBNBCommand.classes:
-            print("** class doesn't exist **")
-            return
+        if len(args_list) == 1:
+            if args_list[0] not in HBNBCommand.classes:
+                print("** class doesn't exist **")
+                return
+            else:
+                new_instance = HBNBCommand.classes[args_list[0]]()
+                storage.save()
+                print(new_instance.id)
+                storage.save()
+                return
+
         kwargs = {}
         for arg in args_list[1:]:
             key, value = arg.split('=')
             value = self.parse_value(value)
             if value is not None:
                 kwargs[key] = value
-        new_instance = HBNBCommand.classes[class_name](**kwargs)
+        new_instance = HBNBCommand.classes[args_list[0]](**kwargs)
         new_instance.save()
         print(new_instance.id)
 
     def parse_value(self, value):
+        """ Parses the value before passe it to kwargs"""
         try:
             if value[0] == '"' and value[-1] == '"':
                 parsed_value = value[1:-1]
@@ -220,7 +216,7 @@ class HBNBCommand(cmd.Cmd):
         key = c_name + "." + c_id
 
         try:
-            del(storage.all()[key])
+            del (storage.all()[key])
             storage.save()
         except KeyError:
             print("** no instance found **")
