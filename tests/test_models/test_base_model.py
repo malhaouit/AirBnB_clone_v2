@@ -76,9 +76,17 @@ class test_basemodel(unittest.TestCase):
 
     def test_kwargs_one(self):
         """ """
-        n = {'Name': 'test'}
-        with self.assertRaises(KeyError):
-            new = self.value(**n)
+        unknown_key = 'unexpected_attribute'
+        unknown_value = 'test'
+        instance = self.value(**{unknown_key: unknown_value})
+        # Check that the unknown attribute is set on the instance
+        self.assertTrue(
+                hasattr(instance, unknown_key),
+                f"Instance should have an attribute '{unknown_key}'.")
+        self.assertEqual(
+                getattr(instance, unknown_key), unknown_value,
+                f"Attribute '{unknown_key}'\
+                        should be set to '{unknown_value}'.")
 
     def test_id(self):
         """ """
@@ -97,3 +105,20 @@ class test_basemodel(unittest.TestCase):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
+
+    def test_dynamic_init_with_params(self):
+        """Test instantiation with dynamic parameters."""
+        name_with_underscores = "Alice_Purry"
+        description_with_quotes = 'A \"famous\" cat'
+        age = 5
+        weight = 9.5
+        obj = self.value(
+                name=name_with_underscores,
+                description=description_with_quotes, age=age, weight=weight)
+        self.assertEqual(obj.name, name_with_underscores)
+        self.assertEqual(
+                obj.description, description_with_quotes.replace('\"', '"'))
+        self.assertEqual(obj.age, age)
+        self.assertTrue(isinstance(obj.age, int))
+        self.assertEqual(obj.weight, weight)
+        self.assertTrue(isinstance(obj.weight, float))
