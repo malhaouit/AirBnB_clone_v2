@@ -117,6 +117,21 @@ class test_fileStorage(unittest.TestCase):
         new_obj.save()
         with open("file.json", "r") as f:
             objects = json.load(f)
-        obj_key = f"BaseModel.{new_obj.id}"
+        obj_key = "BaseModel.{}".format(new_obj.id)
         self.assertIn(obj_key, objects)
         self.assertEqual(objects[obj_key]['extra_param'], "Extra Value")
+
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', "Skip db storage")
+    def test_delete_object_serialization(self):
+        """Test that deleting an object"""
+        obj = BaseModel()
+        obj.save()
+        key = "BaseModel.{}".format(obj.id)
+        try:
+            del (storage.all()[key])
+            storage.save()
+        except KeyError:
+            self.fail("Object deletion failed")
+        with open("file.json", "r") as f:
+            objects = json.load(f)
+        self.assertNotIn(key, objects)
