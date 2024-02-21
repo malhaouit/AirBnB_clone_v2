@@ -97,3 +97,23 @@ class test_basemodel(unittest.TestCase):
         n = new.to_dict()
         new = BaseModel(**n)
         self.assertFalse(new.created_at == new.updated_at)
+
+    def test_dynamic_init_with_params(self):
+        """Test instantiation with dynamic parameters."""
+        name_with_underscores = "Alice_Purry"
+        description_with_quotes = 'A \"famous\" cat'
+        age = 5
+        weight = 9.5
+        obj = self.value(
+                name=name_with_underscores,
+                description=description_with_quotes,
+                age=age,
+                weight=weight)
+        self.assertEqual(obj.name, name_with_underscores.replace("_", " "))
+        self.assertEqual(
+                obj.description,
+                description_with_quotes.replace('\"', '"'))
+        self.assertEqual(obj.age, age)
+        self.assertTrue(isinstance(obj.age, int))
+        self.assertEqual(obj.weight, weight)
+        self.assertTrue(isinstance(obj.weight, float))
