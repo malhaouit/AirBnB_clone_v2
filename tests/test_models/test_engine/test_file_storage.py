@@ -4,6 +4,7 @@ import unittest
 from models.base_model import BaseModel
 from models import storage
 import os
+import json
 
 
 class test_fileStorage(unittest.TestCase):
@@ -107,3 +108,15 @@ class test_fileStorage(unittest.TestCase):
         from models.engine.file_storage import FileStorage
         print(type(storage))
         self.assertEqual(type(storage), FileStorage)
+
+    @unittest.skipIf(os.getenv('HBNB_TYPE_STORAGE') == 'db', "Skip db storage")
+    def test_serialization_with_dynamic_params(self):
+        """Test that objects with dynamic parameters
+        are correctly serialized."""
+        new_obj = BaseModel(extra_param="Extra Value")
+        new_obj.save()
+        with open("file.json", "r") as f:
+            objects = json.load(f)
+        obj_key = f"BaseModel.{new_obj.id}"
+        self.assertIn(obj_key, objects)
+        self.assertEqual(objects[obj_key]['extra_param'], "Extra Value")
