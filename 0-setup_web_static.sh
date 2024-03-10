@@ -65,6 +65,8 @@ echo "$config_content" | sudo tee "$config_file"
 # Remove default nginx site configuration to avoid conflict
 sudo rm -f /etc/nginx/sites-enabled/default
 
+sudo chmod -R 755 "$data_dir"
+
 # Restart Nginx to apply the changes
 if command -v systemctl >/dev/null 2>&1; then
 	sudo systemctl restart nginx
