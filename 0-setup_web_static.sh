@@ -38,7 +38,7 @@ sudo rm -f "$current_link"
 sudo ln -s "$test_release_dir" "$current_link"
 
 # Give ownership to ubuntu user and group
-sudo chown -R ubuntu:ubuntu "$data_dir"
+sudo chown -hR ubuntu:ubuntu "$data_dir"
 
 # Create a dedicated Nginx configuration for hbnb_static
 config_file="/etc/nginx/sites-available/hbnb_static"
