@@ -14,12 +14,15 @@ env.key_filename = '~/.ssh/school'
 
 def do_clean(number=0):
     """Deletes out-of-date archives."""
-    number = int(number) + 1
-    # Local cleaning
-    with lcd("versions"):
-        local("ls -t | tail -n +{} | xargs rm -rf".format(number))
+    number = int(number)
+    if number in [0, 1]:
+        number = 1
+    else:
+        number += 1
 
-    # Remote cleaning
-    with cd("/data/web_static/releases"):
-        run("ls -t | grep web_static | "
-            "tail -n +{} | xargs rm -rf".format(number))
+    # Local cleanup
+    local('ls -tr versions/web_static_* | head -n -{} | xargs rm -f'.format(number))
+
+    # Remote cleanup
+    with cd('/data/web_static/releases'):
+        run('ls -tr web_static_* | head -n -{} | xargs rm -rf'.format(number))
