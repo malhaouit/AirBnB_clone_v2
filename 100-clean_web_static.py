@@ -13,16 +13,17 @@ env.key_filename = '~/.ssh/school'
 
 
 def do_clean(number=0):
-    """Deletes out-of-date archives."""
+    """Cleanup"""
     number = int(number)
-    if number in [0, 1]:
-        number = 1
-    else:
-        number += 1
+    keep_count = number if number >= 1 else 1
 
-    # Local cleanup
-    local('ls -tr versions/web_static_* | head -n -{} | xargs rm -f'.format(number))
+    # Define commands for local and remote cleanup
+    local_cleanup_cmd = 'ls -t versions/web_static_* | tail -n +{} | xargs rm -rf'.format(keep_count + 1)
+    remote_cleanup_cmd = 'ls -t web_static_* | tail -n +{} | xargs rm -rf'.format(keep_count + 1)
 
-    # Remote cleanup
+    # Perform local cleanup
+    local(local_cleanup_cmd)
+
+    # Perform remote cleanup on all hosts
     with cd('/data/web_static/releases'):
-        run('ls -tr web_static_* | head -n -{} | xargs rm -rf'.format(number))
+        run(remote_cleanup_cmd)
