@@ -4,11 +4,13 @@ A Fabric script (based on the file 2-do_deploy_web_static.py) that creates and
 distributes an archive to the web servers.
 Current file: 3-deploy_web_static.py
 """
-from fabric.api import *
-from datetime import datetime
+from fabric.api import env, run, put, local
 import os
+from datetime import datetime
 
 env.hosts = ['54.174.153.120', '18.204.14.78']
+env.user = 'ubuntu'
+env.key_filename = '~/.ssh/school'
 
 
 def do_pack():
