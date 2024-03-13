@@ -13,6 +13,7 @@ env.key_filename = '~/.ssh/school'
 
 
 def do_clean(number=0):
+    """Deletes out-of-date archives."""
     number = int(number) + 1
     # Local cleaning
     with lcd("versions"):
