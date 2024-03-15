@@ -17,57 +17,49 @@ def do_pack():
     """
     Generates a .tgz archive from contents of web_static
     """
-    timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
-    archive_name = "web_static_{}.tgz".format(timestamp)
-    archive_path = "versions/{}".format(archive_name)
-
     try:
+        timestamp = datetime.utcnow().strftime('%Y%m%d%H%M%S')
+        archive_name = "web_static_{}.tgz".format(timestamp)
+        archive_path = "versions/{}".format(archive_name)
         # Ensure versions directory exists
         local("mkdir -p versions")
         # Create archive with compression
         local("tar -cvzf {} web_static".format(archive_path))
-        print("Archive created: {}".format(archive_path))
         return archive_path
     except Exception as e:
-        print("An error occurred: {}".format(e))
         return None
 
 
 def do_deploy(archive_path):
-    """Deploy the archive to the servers"""
+    """Deploys the archive to the servers"""
+
     # Check if the archive exists
-    if not os.path.isfile(archive_path):
+    if not os.path.exists(archive_path):
         return False
 
     try:
         # Transfer the archive
         put(archive_path, "/tmp/")
-        # Extract the file name
-        file_name = os.path.basename(archive_path)
-        # Remove the extension from the file name
+        # Extract the file name and remove the extension
+        file_name = archive_path.split("/")[-1]
         name_no_ext = file_name.split('.')[0]
+        # Path
+        path = "/data/web_static/releases/"
         # Create directory for the archive on the server
-        run('mkdir -p /data/web_static/releases/{}'.format(name_no_ext))
+        run('mkdir -p {}{}'.format(path, name_no_ext))
         # Uncompress the archive to the folder on the server
-        run('tar -xzf /tmp/{} -C '
-            '/data/web_static/releases/{}/'.format(file_name, name_no_ext))
+        run('tar -xzf /tmp/{} -C {}{}/'.format(file_name, path, name_no_ext))
         # Delete the archive from the web server
         run('rm /tmp/{}'.format(file_name))
         # Move the content to the correct folder
-        run('mv /data/web_static/releases/{}/web_static/* '
-            '/data/web_static/releases/{}/'.format(name_no_ext, name_no_ext))
+        run('mv {0}{1}/web_static/* {0}{1}/'.format(path, name_no_ext))
         # Remove the source folder
-        run('rm -rf '
-            '/data/web_static/releases/{}/web_static'.format(name_no_ext))
+        run('rm -rf {}{}/web_static'.format(path, name_no_ext))
         # Delete the current symbolic link and create a new one
         run('rm -rf /data/web_static/current')
-        run('ln -s /data/web_static/releases/{} '
-            '/data/web_static/current'.format(name_no_ext))
-
-        print("New version deployed successfully!")
+        run('ln -s {}{}/ /data/web_static/current'.format(path, name_no_ext))
         return True
     except Exception as e:
-        print("An error occurred: {}".format(e))
         return False
 
 
