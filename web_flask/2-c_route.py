@@ -1,6 +1,6 @@
 #!/usr/bin/python3
 """A script that starts a Flask web application.
-=> Current file: 1-hbnb_route.py"""
+=> Current file: 2-c_route.py"""
 
 from flask import Flask
 
