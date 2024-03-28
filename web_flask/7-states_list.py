@@ -2,6 +2,8 @@
 """A script that starts a Flask web application.
 => Current file: 7-states_list.py"""
 
+#!/usr/bin/python3
+"""Flask framework"""
 from flask import Flask, render_template
 from models import storage
 from models.state import State
@@ -11,18 +13,17 @@ app = Flask(__name__)
 
 @app.teardown_appcontext
 def teardown_db(exception):
-    """Close the current SQLAlchemy session."""
-    storage.close()
+    """ teardown db"""
+    if storage is not None:
+        storage.close()
 
 
-@app.route('/states_list', strict_slashes=False)
+@app.route("/states_list", strict_slashes=False)
 def states_list():
-    """Display a HTML page with a list of all State objects present in
-    DBStorage"""
-    states = list(storage.all(State).values())
-    states.sort(key=lambda state: state.name)
-    return render_template('7-states_list.html', states=states)
+    """ list of state ids"""
+    data = storage.all(State)
+    return render_template('7-states_list.html', total=data.values())
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000)
